@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_todos/list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +15,9 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const Placeholder(),
+      // home: const Placeholder(),
+      initialRoute: "/",
+      routes: {"/": (context) => ListPage()},
     );
   }
 }
