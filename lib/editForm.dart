@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 class EditForm extends StatelessWidget {
@@ -23,7 +24,28 @@ class _EditForm extends StatefulWidget {
 }
 
 class _EditFormState extends State<_EditForm> {
+  //  상태 (TodoItem의 필드)
+  late int _todoId;
+  bool _completed = false;
+
+  //  상수 ( Dart는 상수를 소문자로 작성 (lowerCamelCase)
+  static const String apiEndpoint = "http://3.39.23.38:18088/api/todos";
+
   final TextEditingController _titleController = TextEditingController();
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    //  전 페이지로부터 전달해 준 id 매개변수 받아오기
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+
+    if (args != null && args.containsKey('id')) {
+      _todoId = args['id'];
+      //  매개변수 전달
+      getTodoItem(_todoId);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,13 +62,68 @@ class _EditFormState extends State<_EditForm> {
                 ),
               ),
             ),
-            Checkbox(value: false, onChanged: (value) {}),
+            Checkbox(
+              value: _completed,
+              onChanged: (value) {
+                setState(() {
+                  _completed = value ?? false;
+                });
+              },
+            ),
             SizedBox(
-              child: ElevatedButton(onPressed: () {}, child: Text("수정")),
+              child: ElevatedButton(
+                onPressed: () {
+                  updateTodo();
+                },
+                child: Text("수정"),
+              ),
             ),
           ],
         ),
       ),
     );
+  }
+
+  //  서버로부터 TodoItem을 가져오는 통신 함수  (GET)
+  getTodoItem(int todoId) async {
+    try {
+      var dio = Dio();
+      dio.options.headers['Content-Type'] = 'application/json';
+
+      //  TodoItem 받아오기
+      final response = await dio.get("$apiEndpoint/$todoId");
+
+      if (response.statusCode == 200) {
+        //  수정 폼에 출력할 정보를 설정
+        _titleController.text = response.data["title"];
+        setState(() {
+          _completed = response.data["completed"];
+        });
+      }
+    } catch (e) {
+      throw Exception("데이터를 불러오지 못했습니다.: $e");
+    }
+  }
+
+  //  변경된 TodoItem을 서버로 반영하는 통신 함수  (PUT)
+  updateTodo() async {
+    try {
+      var dio = Dio();
+      dio.options.headers['Content-Type'] = 'application/json';
+
+      //  서버로 변경된 할 일을 전송한다.(PUT)
+      final response = await dio.put(
+        "$apiEndpoint/$_todoId",
+        data: {"title": _titleController.text, "completed": _completed},
+      );
+
+      if (response.statusCode == 200) {
+        Navigator.pushNamed(context, "/");
+      } else {
+        throw Exception("API 서버 오류 입니다.");
+      }
+    } catch (e) {
+      throw Exception("할 일을 수정하지 못했습니다.:$e");
+    }
   }
 }

@@ -24,8 +24,8 @@ class _WriteForm extends StatefulWidget {
 }
 
 class _WriteFormState extends State<_WriteForm> {
-  //  상수
-  static const String API_ENDPOINT = "http://3.39.23.38:18088/api/todos";
+  //  상수 ( Dart는 상수를 소문자로 작성 (lowerCamelCase)
+  static const String apiEndpoint = "http://3.39.23.38:18088/api/todos";
 
   final TextEditingController _titleController = TextEditingController();
   @override
@@ -64,7 +64,7 @@ class _WriteFormState extends State<_WriteForm> {
       var dio = Dio();
       dio.options.headers['Content-Type'] = 'application/json';
       final response = await dio.post(
-        API_ENDPOINT,
+        apiEndpoint,
         data: {"title": _titleController.text, "completed": false},
       );
       //  응답

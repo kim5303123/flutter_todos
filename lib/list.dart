@@ -32,8 +32,8 @@ class _ListPage extends StatefulWidget {
 }
 
 class _ListPageState extends State<_ListPage> {
-  //  상수
-  static const String API_ENDPOINT = "http://3.39.23.38:18088/api/todos";
+  //  상수 ( Dart는 상수를 소문자로 작성 (lowerCamelCase)
+  static const String apiEndpoint = "http://3.39.23.38:18088/api/todos";
   //  상태 정의
   //  late : 선언시 할당하지 않고, 나중에 할당되는 변수
   late Future<List<TodoItemVo>> todoListFuture;
@@ -143,7 +143,7 @@ class _ListPageState extends State<_ListPage> {
       //  헤더 설정: 데이터를 json 형식으로 주고 받겠다는 약속
       dio.options.headers['Content-Type'] = "application/json";
       //  서버로 목록 요청
-      final response = await dio.get(API_ENDPOINT);
+      final response = await dio.get(apiEndpoint);
 
       //  응답
       if (response.statusCode == 200) {
@@ -183,7 +183,7 @@ class _ListPageState extends State<_ListPage> {
 
       //  데이터 갱신 : PUT
       final response = await dio.put(
-        "$API_ENDPOINT/${item.id}",
+        "$apiEndpoint/${item.id}",
         data: item.toJson(),
       );
 
@@ -205,7 +205,7 @@ class _ListPageState extends State<_ListPage> {
       dio.options.headers['Content-Type'] = 'application/json';
 
       //  서버로 삭제 요청
-      final response = await dio.delete("$API_ENDPOINT/$id");
+      final response = await dio.delete("$apiEndpoint/$id");
 
       if (response.statusCode == 200) {
         return id;
